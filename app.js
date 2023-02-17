@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import express from "express";
+import photoRouter from "./routes/photoRoutes.js";
 
 // configure dotenv
 dotenv.config();
@@ -14,6 +15,7 @@ app.use(express.json());
 app.get("/", (req, res) => {
 	res.status(200).json({message: "Welcome to the Unsplash API!"});
 });
+app.use("/api/photos", photoRouter);
 
 // start server
 const {PORT} = process.env;
