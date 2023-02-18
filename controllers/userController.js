@@ -26,25 +26,19 @@ const cleanupOldTokens = async (user) => {
 	const {badTokens} = user;
 	const {length: oldLen} = badTokens;
 	const expiredRemoved = badTokens.filter(token => {
-		console.log("===========\n" + token);
 		try {
 			const verified = jwt.verify(token, JWT_SECRET);
-			console.log({verified});
 			return true && jwt.verify(token, JWT_SECRET);
 		} catch (err) {
-			console.log("not verified");
 			return false;
 		}
 	});
-	console.log(expiredRemoved.length, expiredRemoved);
 	if (oldLen > expiredRemoved.length) {
 		user.badTokens = expiredRemoved;
 		//const saved = await user.save();
 		//const updated = await user.update({badTokens: expiredRemoved});
 		const saved = await user.save();
-		console.log({saved});
 	}
-	console.log(`login: ${(oldLen - expiredRemoved.length) || "no"} tokens have been removed from badTokens`);
 }
 
 // register
@@ -98,7 +92,6 @@ export const login = asyncHandler(async (req, res) => {
 			throw new Error("invalid credentials");
 		}
 		const {JWT_SECRET} = process.env;
-		console.log({JWT_SECRET});
 		const token = jwt.sign({_id: user._id}, JWT_SECRET, {
 			expiresIn: "30d"
 		});
@@ -117,7 +110,6 @@ export const logout = asyncHandler(async (req, res) => {
 	try {
 		const {user, token} = req;
 		const revoked = await revokeToken(user._id, token);
-		console.log({revoked});
 		res.json({message: "Token revoked"});
 	} catch (err) {
 		const {message} = err;
@@ -132,10 +124,8 @@ export const me = asyncHandler(async (req, res) => {
 	const privateEntries = ["_id", "__v", "password", "badTokens"];
 	// entries without privateEntries
 	const allowedEntries = Object.entries(user._doc).filter(([key, value]) => !privateEntries.includes(key));
-	console.log({allowedEntries});
 	// turn safe entries back into object
 	const safeUserData = Object.fromEntries(allowedEntries);
-	console.log({safeUserData});
 	// return object
 	res.json(safeUserData);
 });
