@@ -28,15 +28,13 @@ const cleanupOldTokens = async (user) => {
 	const expiredRemoved = badTokens.filter(token => {
 		try {
 			const verified = jwt.verify(token, JWT_SECRET);
-			return true && jwt.verify(token, JWT_SECRET);
+			return true && verified;
 		} catch (err) {
 			return false;
 		}
 	});
 	if (oldLen > expiredRemoved.length) {
 		user.badTokens = expiredRemoved;
-		//const saved = await user.save();
-		//const updated = await user.update({badTokens: expiredRemoved});
 		const saved = await user.save();
 	}
 }
