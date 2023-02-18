@@ -119,7 +119,7 @@ export const me = asyncHandler(async (req, res) => {
 	const {user} = req;
 	const userObject = user.toObject();//user._doc
 	// properties that will not be returned to the user
-	const privateEntries = ["_id", "__v", "password", "badTokens"];
+	const privateEntries = ["password", "badTokens"];
 	// entries without privateEntries
 	const allowedEntries = Object.entries(user._doc).filter(([key, value]) => !privateEntries.includes(key));
 	// turn safe entries back into object

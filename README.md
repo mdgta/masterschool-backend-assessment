@@ -1,200 +1,110 @@
-# Backend Assessment
+# Udacity Backend Assessment for Masterschool
 
-## Introduction
+## Important!!!
 
-**Welcome to the Backend Assessment!**
+> **IMPORTANT!** please see the [original repo](https://github.com/udacity/cd12642-masterschool-backend-assessment) from which this repo was forked for the full description
 
-This assessment is designed to help you practice the skills and knowledge you have acquired from the _WD-107 Backend course_. You will be building a `Node.js` `Express` `MongoDB` application to make API endpoints and combine data from the [Unsplash API](https://unsplash.com/documentation). You will create simple and complex `GET` routes, as well as full `CRUD` functionality for a `favoriteUsers` collection. You will also need to connect your app to a `MongoDB` database, and create a full login system with Authentication using `JWT`.
+# Running
 
-To complete this assessment, complete every task in **Parts I** through **VII** outlined below.
+After cloning the repo, install dependencies:
 
-**Requirements to Pass**
+```sh
+npm i
+```
 
-- All routes must return the correct status code and data.
-- Routes, controllers, models, middleware, etc. must be created in the appropriate files and folders.
-- In `Part I` through `III`, `async/await` and `try/catch` blocks must be used to make requests and handle errors rather than promise chaining.
-- Errors must be handled and returned to the user.
-- The `db.js` file must be set up correctly.
-- The `MongoDB` database must be set up correctly.
-- The login system must be secured using `JWT`.
-- Your code must be clean and readable. It should follow the DRY principle.
-- Routes created in **Part VI** should be accessed only by users who are logged in.
-- Error handling middleware is implemented for all `favorites` routes (created in **Part VI**).
-- Auth middleware is implemented for all `favorites` routes (created in **Part VI**).
+For running the server:
 
-**Important Note(s)**
+```sh
+npm run server
+```
 
-- Use [axios](https://www.npmjs.com/package/axios) to make requests to the [Unsplash API](https://unsplash.com/documentation).
-- Save all sensitive passwords and keys to an `.env` file.
-- Upon completing this assessment, submit your Github repo link and the `.env` file.
+# Routes
 
-**Documentation**
+> **Note!** Routes marked with a **\*** require a valid bearer token.
 
-- [Postman documentation](https://learning.postman.com/docs/getting-started/introduction/)
-- [axios documentation](https://www.npmjs.com/package/axios)
-- [Express documentation](https://expressjs.com/en/4x/api.html)
-- [Unsplash API](https://unsplash.com/documentation)
-- [MongoDB](https://www.mongodb.com/docs/)
-- [Mongoose](https://mongoosejs.com/docs/guide.html)
-- [JWT](https://jwt.io/introduction)
-- [bcryptjs](https://www.npmjs.com/package/bcryptjs)
-- [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)
-- [dotenv](https://www.npmjs.com/package/dotenv)
+## Authentication (`/api/auth`)
+Routes for user authentication.
+### POST `/api/auth/register`
+Registers the user. Requires the following fields:
+- `email`- the account's email
+- `username`- the account's username
+- `password`- the account's password
 
-**Downloads**
+If successful, returns an object with the `email` and `username`.
 
-- [Download Compass](https://www.mongodb.com/try/download/compass) to view your MongoDB database.
-- [Download Postman](https://www.postman.com/downloads/) to test your API endpoints.
+### POST `/api/auth/login`
+Generates a JWT token. Requires the following fields:
+- `email`- the account's email
+- `password`- the account's password
 
-**BEFORE YOU START YOUR PROJECT**
+If successful, returns an object with a `token`.
+**Logging in will also trigger a cleanup for blacklisted tokens associated with the user that have already expired**.
 
-Before you start, set up your **Developer** account on **Unsplash** and create an application. You will need to create an application to get your API key. You can find the documentation for the Unsplash API [here](https://unsplash.com/documentation).
+### POST `/api/auth/logout`\*
+Logs the user out by blacklisting their current token. **Requires a valid Bearer token**.
 
-- [ ] Create a **Developer** account on [Unsplash](https://unsplash.com/developers).
-- [ ] Create a new application called BE Assessment.
-- [ ] Copy your **Access Key** and your **Secret Key** and save them to your `.env` file as `UNSPLASH_ACCESS_KEY` and `UNSPLASH_SECRET_KEY` respectively.
+### GET `/api/auth/me`\*
+Returns the user's data. **Requires a valid Bearer token**.
 
-### Part I - Setup Instructions
+## Unsplash (`/api/photos`)
+Routes for fetching data from [Unsplash's API](https://unsplash.com/documentation).
+### GET `/api/photos`
+Registers the user. Requires the following fields:
+- `email`- the account's email
+- `username`- the account's username
+- `password`- the account's password
 
-**Set up your project by following the instructions below.**
+If successful, returns an object with the `email` and `username`.
 
-- [ ] Fork and clone this repository.
-- [ ] Run `npm install` to install dependencies.
-- [ ] Run `npm run server` to start the server w/ `nodemon`.
-- [ ] Create a `.gitignore` file and add `node_modules` and `.env` to it.
-- [ ] Create a `.env` file and add `PORT=3000` to it.
-- [ ] Set up the `app.js` file:
-  - [ ] Require the `express` module
-  - [ ] Set up the `app` object
-  - [ ] Set the `port` to `3000`
-  - [ ] Set up the `app` object to use `express.json()` middleware to parse JSON bodies
-  - [ ] Add a `GET` route to `/` that returns a `200` status and a JSON object with a `message` key assigned to a string that reads, `"Welcome to the Unsplash API!"`
-  - [ ] Set up the server to listen on port `3000`.
-  - [ ] Run your server with `npm run server`
-  - [ ] Check that your server is running:
-    - [ ] You should see your `"Listening on port 3000"` log in the terminal.
-    - [ ] When you visit `http://localhost:3000/` in your browser, you should see a JSON object, `{message: "Welcome to the Unsplash API!"}`.
+### GET `/api/photos/:id`
+Returns a single photo with the provided Photo ID.
 
-**Commit to Github**
+### GET `/api/photos/user/:username`
+Returns all photos by a single user.
 
-- [ ] Commit your work to Github and push to your forked repository w/ a commit message that reads, `"Part I - Setup"`.
+## Favorites (`/api/favorites`)\*
+Routes for users to personally keep their favoritre photos' data.
 
-### Part II - API GET Routes: Return Unsplash Photos
+**All routes here require a valid Bearer token**.
 
-**Create the following `GET` routes in the `photoRoutes.js` file:**
+### GET `/api/favorites`\*
+Returns all favorite photos of the currently-logged-in user.
 
-- [ ] Use `/api/photos` as the base path for all photo routes
+**Requires a valid Bearer token**.
 
-**`/api/photos` Route**
+### POST `/api/favorites`\*
+Adds a new favorite entry for the current user.
 
-Create a `GET`route in the `photoRoutes.js` file that:
+Requires the following data:
 
-- [ ] Returns an array of **raw** **Unsplash** photo URLs.
-- [ ] If the `catch` block is triggered, returns a `500` status and a JSON object with a `message` key assigned to a string that reads, `"Server error. Please try again later."`
+- `url`- the provided image's URL
+- `description`- the image's description
+- `username`- the image uploader
+- `explanation`- describing why the current user saved this image
 
-**`/api/photos/:id` Route**
+If successful, will return the newly-created entry.
 
-Create a `GET`route in the `photoRoutes.js` file that:
+**Requires a valid Bearer token**.
 
-- [ ] Returns a single photo object from the Unsplash API based on a photo's `id`
-- [ ] If the `catch` block is triggered, returns a `500` status and a JSON object with a `message` key assigned to a string that reads, `"Server error. Please try again later."`
+### PATCH `/api/favorites/:id`\*
+Updates the `explanation` field of an entry by its id.
 
-**Commit to Github**
+Requires the following data:
 
-- [ ] Commit your work to Github and push to your forked repository w/ a commit message that reads, `"Part II - API GET Routes: Return Unsplash Photos"`.
+- `explanation`- describing why the current user saved this image
 
-### Part III - Advanced Route: Return Combined Data
+If successful, will return the updated entry.
 
-**`/api/photos/user/:username` Route**
+**Requires a valid Bearer token**.
 
-Create a `GET`route in the `photoRoutes.js` file that:
+### DELETE `/api/favorites/:id`\*
+Deletes an entry by its id.
 
-- [ ] Returns an array of a user's **Unsplash** photos based on a `username` parameter.
-  - [ ] The array of photos should be an array of objects with the following keys:
-    - [ ] `id` - photo's id
-    - [ ] `username` - the `username` of the `user` who added the photo
-    - [ ] `description` - photo's description
-    - [ ] `url` - photo's raw URL
-    - [ ] if the `description` is `null`, the `description` key should be assigned to a string that reads, `"No description provided."`
-- [ ] If the `catch` block is triggered, it returns the error `status` and a JSON object with a `message` key assigned to the error message contained in the `axios` error response data. Use [Axios Response Schema documentation](https://axios-http.com/docs/res_schema) as needed.
+Requires no parameters.
 
-**Commit to Github**
+If successful, will return the updated entry.
 
-- [ ] Commit your work to Github and push to your forked repository w/ a commit message that reads, `"Part III - Advanced Routes: Return Combined Data"`.
-
-### Part IV - Set up MongoDB and connect to your application
-
-- [ ] Set up a `MongoDB` database
-- [ ] Connect it to your application.
-- [ ] Add the `MONGO_URI` to your `.env` file
-
-### Part V - Authentication
-
-**Create Authentication using `JWT`:**
-
-- [ ] Create a `User` model that has the following properties:
-
-  - [ ] `username` - a string
-  - [ ] `password` - a string
-  - [ ] `email` - a string
-  - [ ] Set all properties to required
-  - [ ] Make sure that the `email` is unique
-  - [ ] Include a timestamp
-
-- [ ] Create a `register` route where users can sign up for your application
-  - [ ] All passwords should be hashed using `bcryptjs` and **10 salt rounds**
-  - [ ] Make sure that the user's `email` is unique
-  - [ ] If the user's `email` is not unique, return a `400` status and a JSON object with a `message` key assigned to a string that reads, `"Email already exists."`
-- [ ] Create a `login` route where users can sign in
-  - [ ] `login` route should compare the hashed password to the password in the user request and returns a `JWT token`
-- [ ] Create a `logout` route that invalidates the `JWT token`
-- [ ] Create the `JWT token` using `jsonwebtoken`
-- [ ] Create a middleware that checks for the `JWT token` and verifies it
-- [ ] Create a private `/me` route that returns the user's information based on the `JWT token`
-- [ ] Store the `JWT_SECRET` in your `.env` file
-
-**Commit to Github**
-
-- [ ] Commit your work to Github and push to your forked repository w/ a commit message that reads, `"Part VI - Authentication"`.
-
-### Part VI - Collection of Favorite Photos
-
-**Note:** All functionality in this section should only be accessed by authenticated users.
-
-- [ ] Implement `asyncHandler` to avoid `try/catch` blocks and to trigger error handling middleware (error middleware to be completed in **Part VII**)
-- [ ] Create a new collection in your database called `favoritePhotos`
-- [ ] Create a `model` for your `favoritePhotos` collection with a schema that includes the following:
-  - [ ] `user` - the authenticated `unsplash-backend-assessment` user's `id`
-  - [ ] `url` - the photo's raw url
-  - [ ] `description` - the photo's description
-  - [ ] `username` - the **Unsplash** user's `username` associated with the photo url
-- [ ] Create a route that allows a user to add a photo's `url`, `description`, and **Unsplash** user's `username` as well as an `explanation` of why they added the photo to their `favoritePhotos` collection
-- [ ] Create a route that allows a user to `get` all of their `favoritePhotos`
-- [ ] Create a route that allows a user to `remove` a photo from their `favoritePhotos`
-- [ ] Create a route that allows a user to `edit` their `description` of why they added the photo to their list of `favorites`
-
-**Commit to Github**
-
-- [ ] Commit your work to Github and push to your repository w/ a commit message that reads, `"Part VII - Favorites Collection"`
-
-### Part VII - Error Handling Middleware
-
-**Create an `errorHandler` function in the `errorMiddleware.js` file that:**
-
-- [ ] Responds with a `statusCode` and error `message`
-- [ ] Returns the `stack` trace only if the environment is in `development`
-- [ ] Implement the `errorHandler` function in your `app.js` file
-- [ ] Check that the `errorHandler` is working with all of the `favorites` routes created in **Part VI**. No need to implement for `photos` routes.
-
-**Commit to Github**
-
-- [ ] Commit your work to Github and push to your repository w/ a commit message that reads, `"Part VII - Error Handling Middleware"`
-
-### Pass in your assessment
-
-- [ ] Ensure all routes work as expected
-- [ ] Ensure that your code is readable and DRY
-- [ ] Include the `.env` file
+**Requires a valid Bearer token**.
 
 # Other resources
 - [`doc` to object](https://stackoverflow.com/a/7503523) by [jmar777](https://stackoverflow.com/users/376789/jmar777) (instead of using just `doc._doc`)
