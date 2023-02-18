@@ -29,7 +29,8 @@ export const add = asyncHandler(async (req, res) => {
 });
 
 export const edit = asyncHandler(async (req, res) => {
-	const {id, explanation} = req.body;
+	const {id} = req.params;
+	const {explanation} = req.body;
 	if (!(id && explanation)) {
 		res.status(400);
 		throw new Error("edit error: please add the favorite entry's id and explanation");
@@ -50,7 +51,7 @@ export const edit = asyncHandler(async (req, res) => {
 });
 
 export const remove = asyncHandler(async (req, res) => {
-	const {id} = req.body;
+	const {id} = req.params;
 	if (!id) {
 		res.status(404);
 		throw new Error("delete error: please provide id");

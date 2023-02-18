@@ -7,7 +7,9 @@ router.use(authMiddleware);
 
 router.route("/")
 	.get(get)
-	.post(add)
+	.post(add);
+
+router.route("/:id")
 	.patch(edit) // using patch rather put because this is only for updating a specific field
 	.delete(remove);
 
