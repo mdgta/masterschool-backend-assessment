@@ -3,6 +3,7 @@ import connectDB from "./config/db.js";
 import express from "express";
 import photoRouter from "./routes/photoRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import favoriteRoutes from "./routes/favoritesRoutes.js";
 
 // configure dotenv
 dotenv.config();
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 });
 app.use("/api/photos", photoRouter);
 app.use("/api/auth", userRoutes);
+app.use("/api/favorites", favoriteRoutes);
 
 // start server
 const {PORT} = process.env;

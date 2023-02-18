@@ -7,7 +7,7 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
 		// get token from header
 		const {authorization: auth} = req.headers;
 		if (!auth) {
-			throw new Error("cannot log out: token missing");
+			throw new Error("auth error: token not recognized");
 		}
 		const token = auth.slice(7); // bearer token
 		// get _id from jwt payload
