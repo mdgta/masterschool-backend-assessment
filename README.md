@@ -195,3 +195,6 @@ Create a `GET`route in the `photoRoutes.js` file that:
 - [ ] Ensure all routes work as expected
 - [ ] Ensure that your code is readable and DRY
 - [ ] Include the `.env` file
+
+# Other resources
+- [`doc` to object](https://stackoverflow.com/a/7503523) by [jmar777](https://stackoverflow.com/users/376789/jmar777) (instead of using just `doc._doc`)
